@@ -12,7 +12,7 @@ radikorec
 ```
 
 ## Dependencies
-* [rtmpdump](https://github.com/svnpenn/rtmpdump) >= 2.4  
+* [rtmpdump](http://rtmpdump.mplayerhq.hu/) >= 2.4  
 * [swftools](http://www.swftools.org/download.html)  
 * ffmpeg   
 
