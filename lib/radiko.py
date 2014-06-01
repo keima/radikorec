@@ -5,8 +5,84 @@ import commands
 
 import xml.etree.ElementTree as ET
 
+cookiefile = "/tmp/radiko_cookie"
+
+def login(config):
+	if os.path.exists(cookiefile):
+		is_login = check(config)
+		if is_login:
+			config.P("INFO: already logged-in")
+			return
+		else:
+			config.P("WARN: cookie is expired or not login")
+
+	login_id = config.args.id
+	login_pass = config.args.password
+
+	command = """\
+wget -q \
+--header="pragma: no-cache" \
+--post-data='mail=%s&pass=%s' \
+--no-check-certificate \
+--save-cookies=%s \
+-O - \
+https://radiko.jp/ap/member/login/login
+""".strip() % (login_id, login_pass, cookiefile)
+
+	r = config.R(command)
+
+	if (r is not 0) or not os.path.exists(cookiefile):
+		config.P("ERROR login failed")
+		exit(1)
+
+	config.P("login OK")
+
+
+def logout(config):
+	if not os.path.exists(cookiefile):
+		return
+
+	command = """\
+wget -q \
+--header="pragma: no-cache" \
+--no-check-certificate \
+--load-cookies=%s \
+-O - \
+http://radiko.jp/ap/member/webapi/member/logout
+""".strip() % (cookiefile)
+	
+	r = config.R(command)
+
+	if (r is not 0):
+		config.P("WARN: logout failed (not logged-in?)")
+
+	config.R("rm " + cookiefile)
+	config.P("logout OK")
+
+
+def check(config):
+	command = """\
+wget -q \
+--header="pragma: no-cache" \
+--no-check-certificate \
+--load-cookies=%s \
+--save-cookies=%s \
+-O - \
+http://radiko.jp/ap/member/webapi/member/login/check
+""".strip() % (cookiefile,cookiefile)
+
+	r = config.R(command)
+
+	if(r is not 0):
+		config.P("check is failed(LOGOUT or EXPIRED?)")
+		return False
+	else:
+		config.P("check is success")
+		return True
+
+
 def getCommand1(config):
-	playerurl="http://radiko.jp/player/swf/player_3.0.0.01.swf"
+	playerurl="http://radiko.jp/player/swf/player_4.1.0.00.swf"
 	playerfile="/tmp/radiko_player.swf"
 	keyfile="/tmp/radiko_authkey.png"
 
@@ -38,10 +114,12 @@ wget -q \
 --header="X-Radiko-Device: pc" \
 --post-data='\r\n' \
 --no-check-certificate \
+--load-cookies=%s \
 --save-headers \
 https://radiko.jp/v2/api/auth1_fms
-"""
-	r = config.R(command)			
+""".strip() % (cookiefile)
+
+	r = config.R(command)
 
 	if (r is not 0) or not os.path.exists("auth1_fms"):
 		config.P("ERROR auth1 failed")
@@ -106,8 +184,9 @@ wget -q \
 --header="X-Radiko-Partialkey: %s" \
 --post-data='\r\n' \
 --no-check-certificate \
+--load-cookies=%s \
 https://radiko.jp/v2/api/auth2_fms
-""".strip() % (authtoken, partialkey)
+""".strip() % (authtoken, partialkey, cookiefile)
 	r = config.R(command)
 
 	if (r is not 0) or not os.path.exists("auth2_fms"):
@@ -133,7 +212,7 @@ https://radiko.jp/v2/api/auth2_fms
 		
 	command = """ \
 wget \
--q "http://radiko.jp/v2/station/stream/%s"
+-q "http://radiko.jp/v2/station/stream_multi/%s"
 """.strip() % xmlFile
 	config.R(command)	
 
@@ -143,7 +222,12 @@ wget \
 	f.close()
 
 	root = ET.fromstring(text)
-	stream_url = root[0].text
+
+	if config.args.premium:
+		stream_url = root.find(".//item[@areafree='1']").text
+	else:
+		stream_url = root.find(".//item[@areafree='0']").text
+
 	config.P("stream_url: %s" % stream_url)
 
 	pat = re.compile(r"^(.+)://(.+?)/(.*)/(.*?)$")

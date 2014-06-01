@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import commands
 from argparse import ArgumentParser
 
@@ -22,6 +23,12 @@ class Config:
 		
 	def P(self, msg):
 		LOGFILE = "/tmp/radikorec.log"
+
+		# Hide if contains id and pass
+		msg = str(msg)
+		msg = re.sub("id='.*?'", r"id='*****'", msg)
+		msg = re.sub("password='.*?'", r"password='*****'", msg)
+
 		f = open(LOGFILE, "a")
 		f.write(str(msg) + "\n")
 		f.close
@@ -46,6 +53,10 @@ if __name__ == '__main__':
 	parser.add_argument('--directory', default='/tmp', help="output directory. default(/tmp)")
 	parser.add_argument('--debug', action='store_true', default=False, help="print messages on console.")
 	parser.add_argument('--dry-run', action='store_true', default=False, help="don't actually execute")
+
+	parser.add_argument('--premium', action='store_true', default=False, help="use Radiko Premium Authentication(--id and --password is required)")
+	parser.add_argument('--id', default=None, help="Radiko Premium ID")
+	parser.add_argument('--password', default=None, help="Radiko Premium Password")
 	
 	args = parser.parse_args()
 	
@@ -59,6 +70,11 @@ if __name__ == '__main__':
 		command1 = radiru.getCommand1(config)
 	else:		
 		config.P("use RADIKO")
+		if config.args.premium:
+			radiko.login(config)
+		else:
+			radiko.logout(config)
+
 		command1 = radiko.getCommand1(config)
 		
 	if command1 is None:
@@ -73,7 +89,7 @@ if __name__ == '__main__':
 			repeat += 1
 		else:		
 			break
-		
+
 	if repeat is 10:
 		config.P("ERROR all command1 retries failed")
 		exit(1)
