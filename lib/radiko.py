@@ -25,6 +25,7 @@ wget -q \
 --post-data='mail=%s&pass=%s' \
 --no-check-certificate \
 --save-cookies=%s \
+-O - \
 https://radiko.jp/ap/member/login/login
 """.strip() % (login_id, login_pass, cookiefile)
 
@@ -46,6 +47,7 @@ wget -q \
 --header="pragma: no-cache" \
 --no-check-certificate \
 --load-cookies=%s \
+-O - \
 http://radiko.jp/ap/member/webapi/member/logout
 """.strip() % (cookiefile)
 	
@@ -65,6 +67,7 @@ wget -q \
 --no-check-certificate \
 --load-cookies=%s \
 --save-cookies=%s \
+-O - \
 http://radiko.jp/ap/member/webapi/member/login/check
 """.strip() % (cookiefile,cookiefile)
 
