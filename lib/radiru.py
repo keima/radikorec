@@ -2,6 +2,12 @@ CHANNEL_MAP = {
 	"FM"   : ("fm", 63343), 
 	"NHK1" : ("r1", 63346), 
 	"NHK2" : ("r2", 63342),
+	"FM_SENDAI"   : ("hkfm", 108237),
+	"NHK1_SENDAI" : ("hkr1", 108442),
+	"FM_NAGOYA"   : ("ckfm", 108235),
+	"NHK1_NAGOYA" : ("ckr1", 108234),
+	"FM_OSAKA"    : ("bkfm", 108233),
+	"NHK1_OSAKA"  : ("bkr1", 108232),
 }
 
 def getCommand1(config):
