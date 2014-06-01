@@ -6,8 +6,8 @@ pwd
 make
 cd -
 
-git clone https://github.com/svnpenn/rtmpdump.git
+git clone git://git.ffmpeg.org/rtmpdump
 cd rtmpdump
 pwd
-make SYS=posix	
+make SYS=posix
 cd -
