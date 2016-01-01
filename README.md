@@ -4,10 +4,10 @@ A Simple Radiko/Radiru Recorder
 ## Example
 The command below nicely helps you learn English. Enjoy your life!
 ```
-radikorec 
---channel=NHK2 
---duration=15 
---prefix=BUSINESS_ENGLISH 
+radikorec
+--channel=NHK2
+--duration=15
+--prefix=BUSINESS_ENGLISH
 --directory=/home/akira/radio
 ```
 
@@ -20,7 +20,27 @@ radikorec
 `#make install`(recommended) or `#pip install radikorec`.
 
 There are few programs you may have to build by yourself.  
-run `$./compile` and then `#./setup`.  
+run `$./compile` and then `#./setup`.
+
+### Install at Ubuntu Server 14.04 LTS
+
+- Before Install dependencies, install libraries
+ + zlib1g-dev
+ + libssl-dev
+- Build and Install dependencies (rtmpdump and swftools)
+ + `$ sudo ./compile`
+ + `$ sudo ./setup`
+- Install ffmpeg (not Libav)
+ + `$ sudo add-apt-repository ppa:mc3man/trusty-media`
+ + `$ sudo apt-get update`
+ + `$ sudo apt-get install ffmpeg`
+- Install radikorec
+ + `$ sudo make install`
+- If occur "ImportError: No module named setuptools" error when running make, try following instruction and retry `Install radikorec` section.
+ + `$ wget http://peak.telecommunity.com/dist/ez_setup.py`
+ + `$ sudo python ez_setup.py`
+- Is install successful? Check it out!
+ + `$ ./runtest`
 
 ## Test
 First, `$./runtest` to see if it works.  
