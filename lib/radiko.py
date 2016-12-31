@@ -50,7 +50,7 @@ wget -q \
 -O - \
 http://radiko.jp/ap/member/webapi/member/logout
 """.strip() % (cookiefile)
-	
+
 	r = config.R(command)
 
 	if (r is not 0):
@@ -89,11 +89,11 @@ def getCommand1(config):
 	if not os.path.exists(playerfile):
 		command = "wget -q -O %s %s" % (playerfile, playerurl)
 		r = config.R(command)
-		
+
 		if r is not 0:
 			config.P("ERROR failed to get player")
 			exit(1)
-			
+
 	if not os.path.exists(keyfile):
 		command = "swfextract -b 12 %s -o %s" % (playerfile, keyfile)
 		r = config.R(command)
@@ -101,10 +101,10 @@ def getCommand1(config):
 		if r is not 0:
 			config.P("ERROR failed to get key")
 			exit(1)
-			
-	if os.path.exists("auth1_fms"):			
+
+	if os.path.exists("auth1_fms"):
 		config.R("rm auth1_fms")
-	
+
 	command = """\
 wget -q \
 --header="pragma: no-cache" \
@@ -124,13 +124,13 @@ https://radiko.jp/v2/api/auth1_fms
 	if (r is not 0) or not os.path.exists("auth1_fms"):
 		config.P("ERROR auth1 failed")
 		exit(1)
-		
-	config.P("auth1 OK")			
+
+	config.P("auth1 OK")
 
 	f = open("auth1_fms")
 	text = f.read()
 	config.P(text)
-	f.close()	
+	f.close()
 
 	p1 = re.compile(r"x-radiko-authtoken: (.*)", re.I)
 	m1 = p1.search(text)
@@ -153,9 +153,9 @@ https://radiko.jp/v2/api/auth1_fms
 	if not m3:
 		config.P("ERROR keylength not parsed")
 		exit(1)
-	keylength = int(m3.group(1))		
+	keylength = int(m3.group(1))
 	config.P("keylength: %d" % keylength)
-	
+
 	command = """ \
 dd \
 if=%s \
@@ -164,7 +164,7 @@ skip=%d \
 count=%d \
 2> /dev/null | base64
 """.strip() % (keyfile, keyoffset, keylength)
-	config.P(command)		
+	config.P(command)
 	partialkey = commands.getoutput(command)
 	config.P("partialkey: %s" % (partialkey))
 
@@ -172,7 +172,7 @@ count=%d \
 
 	if os.path.exists("auth2_fms"):
 		config.R("rm auth2_fms")
-		
+
 	command = """ \
 wget -q \
 --header="pragma: no-cache" \
@@ -192,8 +192,8 @@ https://radiko.jp/v2/api/auth2_fms
 	if (r is not 0) or not os.path.exists("auth2_fms"):
 		config.P("ERROR auth2 failed")
 		exit(1)
-			
-	config.P("auth2 OK")		
+
+	config.P("auth2 OK")
 
 	f = open("auth2_fms")
 	text = f.read()
@@ -209,14 +209,14 @@ https://radiko.jp/v2/api/auth2_fms
 	xmlFile = "%s.xml" % channel
 	if os.path.exists(xmlFile):
 		config.R("rm %s" % xmlFile)
-		
+
 	command = """ \
 wget \
 -q "http://radiko.jp/v2/station/stream_multi/%s"
 """.strip() % xmlFile
-	config.R(command)	
+	config.R(command)
 
-	f = open(xmlFile)		
+	f = open(xmlFile)
 	text = f.read()
 	config.P(text)
 	f.close()
@@ -235,9 +235,9 @@ wget \
 	A = mat.group(1)
 	B = mat.group(2)
 	C = mat.group(3)
-	D = mat.group(4)	
+	D = mat.group(4)
 	config.P("A: %s, B:%s, C:%s, D:%s" % (A, B, C, D))
-	
+
 	config.R("rm %s" % xmlFile)
 
 	command = """ \
