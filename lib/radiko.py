@@ -82,7 +82,7 @@ http://radiko.jp/ap/member/webapi/member/login/check
 
 
 def getCommand1(config):
-	playerurl="http://radiko.jp/player/swf/player_4.1.0.00.swf"
+	playerurl="http://radiko.jp/apps/js/flash/myplayer-release.swf"
 	playerfile="/tmp/radiko_player.swf"
 	keyfile="/tmp/radiko_authkey.png"
 
@@ -95,9 +95,9 @@ def getCommand1(config):
 			exit(1)
 			
 	if not os.path.exists(keyfile):
-		command = "swfextract -b 14 %s -o %s" % (playerfile, keyfile)
-		r = config.R(command)	
-		
+		command = "swfextract -b 12 %s -o %s" % (playerfile, keyfile)
+		r = config.R(command)
+
 		if r is not 0:
 			config.P("ERROR failed to get key")
 			exit(1)
@@ -108,8 +108,8 @@ def getCommand1(config):
 	command = """\
 wget -q \
 --header="pragma: no-cache" \
---header="X-Radiko-App: pc_1" \
---header="X-Radiko-App-Version: 2.0.1" \
+--header="X-Radiko-App: pc_ts" \
+--header="X-Radiko-App-Version: 4.0.0" \
 --header="X-Radiko-User: test-stream" \
 --header="X-Radiko-Device: pc" \
 --post-data='\r\n' \
@@ -176,12 +176,12 @@ count=%d \
 	command = """ \
 wget -q \
 --header="pragma: no-cache" \
---header="X-Radiko-App: pc_1" \
---header="X-Radiko-App-Version: 2.0.1" \
+--header="X-Radiko-App: pc_ts" \
+--header="X-Radiko-App-Version: 4.0.0" \
 --header="X-Radiko-User: test-stream" \
 --header="X-Radiko-Device: pc" \
---header="X-Radiko-Authtoken: %s" \
---header="X-Radiko-Partialkey: %s" \
+--header="X-Radiko-AuthToken: %s" \
+--header="X-Radiko-PartialKey: %s" \
 --post-data='\r\n' \
 --no-check-certificate \
 --load-cookies=%s \
